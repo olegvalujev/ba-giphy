@@ -27,6 +27,12 @@ export const loadImages = (): ThunkType => async (dispatch) =>  {
   })
 }
 
+export const loadTrendingImages = (): ThunkType => async (dispatch) =>  {
+  giphyAPI.getTrending().then(res => {
+    console.log(res.data)
+    dispatch(actions.loadImages(res.data.data))
+  })
+}
 export default galleryReducer
 
 export type InitialStateType = typeof initialState
