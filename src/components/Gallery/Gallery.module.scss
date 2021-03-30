@@ -1,6 +1,57 @@
+.gallery {
+  display: flex;
+  flex-wrap: wrap;
+}
+
 .image {
+  position: relative;
+  box-sizing: border-box;
+  max-height: 260px;
+  overflow: hidden;
+  margin-left: 20px;
+  margin-bottom: 20px;
+  flex-basis: calc(100vw - 60px);
+
+  @media only screen and (min-width: 600px) {
+    flex-basis: calc((100vw/2) - 40px);
+  }
+  @media only screen and (min-width: 992px) {
+    flex-basis: calc((100vw/4) - 30px);
+  }
+
+  &.locked {
+    border: 4px solid rgb(67, 39, 245);
+  }
+
+
+
   img {
-    width: 200px;
-    height: auto;
+    max-width: 100%;
+    width: 100%;
+    height: 260px;
+    object-fit: fill;
+  }
+
+  &:hover {
+    cursor: pointer;
+
+    .lock, .unlock {
+      display: flex;
+    }
+  }
+
+  .lock, .unlock {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+  }
+  .lock {
+    display: none;
+    bottom: 10px;
+  }
+  .lockText {
+    color: white;
   }
 }

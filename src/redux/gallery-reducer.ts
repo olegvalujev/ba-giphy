@@ -9,7 +9,23 @@ const galleryReducer = (state = initialState, action: ActionsType): InitialState
     case 'SN/APP/LOAD_IMAGES':
       return {
         ...state,
-        images: [...state.images.filter(i => i.locked), ...action.payload.images]
+        images: [...state.images.filter(i => i.locked), ...action.payload.images.filter(i => {
+          if (!state.images.filter(image => image.id === i.id).length) {
+            return true
+          }
+          return false
+        })]
+      }
+    case 'SN/APP/TOGGLE_IMAGE_LOCK':
+      const processedImages = state.images.map(i => {
+        if (i.id === action.payload.image.id) {
+          i.locked = !i.locked
+        }
+        return i
+      })
+      return {
+        ...state,
+        images: [...processedImages]
       }
     default:
       return state
@@ -17,22 +33,22 @@ const galleryReducer = (state = initialState, action: ActionsType): InitialState
 }
 
 export const actions = {
-  loadImages: (images: ResponseDataType[]) => ({type: 'SN/APP/LOAD_IMAGES', payload: {images}} as const)
+  loadImages: (images: ResponseDataType[]) => ({type: 'SN/APP/LOAD_IMAGES', payload: {images}} as const),
+  toggleImageLock: (image: ResponseDataType) => ({type: 'SN/APP/TOGGLE_IMAGE_LOCK', payload: {image}} as const)
 }
 
 export const loadImages = (): ThunkType => async (dispatch) =>  {
   giphyAPI.searchGifs('funny').then(res => {
-    console.log(res.data)
     dispatch(actions.loadImages(res.data.data))
   })
 }
 
 export const loadTrendingImages = (): ThunkType => async (dispatch) =>  {
   giphyAPI.getTrending().then(res => {
-    console.log(res.data)
     dispatch(actions.loadImages(res.data.data))
   })
 }
+
 export default galleryReducer
 
 export type InitialStateType = typeof initialState
