@@ -1,5 +1,5 @@
 import {BaseThunkType, InferActionsTypes} from "./redux-store"
-import {loadImages} from './gallery-reducer'
+import {loadImages, loadTrendingImages} from './gallery-reducer'
 
 let initialState = {
   initialized: false
@@ -21,7 +21,7 @@ export const actions = {
 }
 
 export const initializeApp = (): ThunkType => async (dispatch) =>  {
-  dispatch(loadImages())
+  dispatch(loadTrendingImages())
   dispatch(actions.initializationSuccess())
 }
 

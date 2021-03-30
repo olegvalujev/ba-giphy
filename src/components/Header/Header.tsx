@@ -21,7 +21,7 @@ export const Header = () => {
     <div className={styles.shuffle}>
       <InfoOutlinedIcon style={{fill: 'rgb(99, 100, 101)', paddingRight: '10px'}}/>
       <span className={styles.info}>Press <span className={styles.spaceBar}>spacebar</span> for shuffle or</span>
-      <Button variant="contained" color="primary" size="medium" onClick={onShuffleClick}>Click here</Button>
+      <Button variant="contained" color="primary" size="small" onClick={onShuffleClick}>Click here</Button>
     </div>
   </header>
 }
