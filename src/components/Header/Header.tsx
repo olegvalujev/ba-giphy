@@ -10,7 +10,6 @@ export const Header = () => {
   const dispatch = useDispatch()
 
   const onShuffleClick = (event: any) => {
-    console.log('Shuffle', event)
     dispatch(loadTrendingImages())
   }
 

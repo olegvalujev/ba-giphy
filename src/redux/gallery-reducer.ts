@@ -7,14 +7,13 @@ let initialState = {
 const galleryReducer = (state = initialState, action: ActionsType): InitialStateType => {
   switch (action.type) {
     case 'SN/APP/LOAD_IMAGES':
+      let lockedImages = state.images.filter(i => i.locked)
+      let filteredImages = action.payload.images.filter(i => lockedImages.filter(im => im.id === i.id).length === 0)
+      if (filteredImages.length === 0) filteredImages = action.payload.images
+
       return {
         ...state,
-        images: [...state.images.filter(i => i.locked), ...action.payload.images.filter(i => {
-          if (!state.images.filter(image => image.id === i.id).length) {
-            return true
-          }
-          return false
-        })]
+        images: [...lockedImages,...filteredImages]
       }
     case 'SN/APP/TOGGLE_IMAGE_LOCK':
       const processedImages = state.images.map(i => {
@@ -43,8 +42,8 @@ export const loadImages = (): ThunkType => async (dispatch) =>  {
   })
 }
 
-export const loadTrendingImages = (): ThunkType => async (dispatch) =>  {
-  giphyAPI.getTrending().then(res => {
+export const loadTrendingImages = (limit: number = 12): ThunkType => async (dispatch) =>  {
+  giphyAPI.getTrending(limit).then(res => {
     dispatch(actions.loadImages(res.data.data))
   })
 }

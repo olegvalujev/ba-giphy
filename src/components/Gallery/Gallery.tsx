@@ -23,11 +23,6 @@ export const Gallery: React.FC = React.memo(() => {
     }
   }
 
-  useEffect(() => {
-    console.log(images)
-  }, [images])
-
-
   return <div className={styles.gallery}>
     {images.map(image => <Image key={image.id} image={image}/>)}
   </div>
@@ -35,15 +30,11 @@ export const Gallery: React.FC = React.memo(() => {
 
 const Image: React.FC<{ image: ResponseDataType }> = ({image}) => {
   const dispatch = useDispatch()
-  useEffect(() => {
-    console.log('image ' + image.locked)
-  }, [image])
 
   const handleOnClick = (event: any) => {
     dispatch(actions.toggleImageLock(image))
   }
 
-  console.log(styles.image, styles.locked)
   return <div className={styles.image + ' ' + (image.locked ? styles.locked : '')} onClick={handleOnClick}>
     <img src={image.images.original.url} alt={''}/>
     {image.locked && <div className={styles.unlock}>
