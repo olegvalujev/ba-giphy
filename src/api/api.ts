@@ -12,9 +12,9 @@ export const giphyAPI = {
       `gifs/search?api_key=${API_KEY}&q=${query}&limit=${limit}&offset=${offset}&rating=g&lang=en`
     )
   },
-  getTrending(limit: number | null = 10) {
+  getTrending(limit: number | null = 12, offset: number | null = 0) {
     return instance.get<ResponseType>(
-      `gifs/trending?api_key=${API_KEY}&limit=${limit}&rating=g&lang=en`
+      `gifs/trending?api_key=${API_KEY}&limit=${limit}&offset=${offset}&rating=g&lang=en`
     )
   },
 
@@ -27,13 +27,13 @@ export const giphyAPI = {
 }*/
 
 export type ResponseType = {
-  data: ResponseDataType[]
+  data: GifType[]
   pagination: ResponsePaginationType
   meta: ResponseMetaType
 }
 
-export type ResponseDataType = {
-  images: ResponseImagesType
+export type GifType = {
+  images: any
   type : string
   id: string
   url: string
@@ -52,9 +52,8 @@ export type ResponseDataType = {
   import_datetime: string
   trending_datetime: string
   locked: boolean
+  order_index: number | undefined
 }
-
-export type ResponseImagesType = any
 
 export type ResponsePaginationType = {
   total_count: number,

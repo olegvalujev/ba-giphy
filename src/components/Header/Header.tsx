@@ -1,16 +1,16 @@
 import React from 'react'
 import styles from './Header.module.scss'
 import logo from '../../assets/TESTHY.svg'
-import { Button } from '@material-ui/core';
-import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
+import {Button} from '@material-ui/core'
+import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined'
 import {useDispatch} from 'react-redux'
-import {loadTrendingImages} from '../../redux/gallery-reducer'
+import {actions} from '../../redux/gallery-reducer'
 
 export const Header = () => {
   const dispatch = useDispatch()
 
   const onShuffleClick = (event: any) => {
-    dispatch(loadTrendingImages())
+    dispatch(actions.increaseTrendingOffset(12))
   }
 
   return <header className={styles.header}>

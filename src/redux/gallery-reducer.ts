@@ -1,8 +1,9 @@
 import {BaseThunkType, InferActionsTypes} from "./redux-store"
-import {giphyAPI, ResponseDataType} from '../api/api'
+import {GifType, giphyAPI} from '../api/api'
 
 let initialState = {
-  images: [] as ResponseDataType[]
+  images: [] as GifType[],
+  offset: 0 as number
 }
 const galleryReducer = (state = initialState, action: ActionsType): InitialStateType => {
   switch (action.type) {
@@ -10,10 +11,34 @@ const galleryReducer = (state = initialState, action: ActionsType): InitialState
       let lockedImages = state.images.filter(i => i.locked)
       let filteredImages = action.payload.images.filter(i => lockedImages.filter(im => im.id === i.id).length === 0)
       if (filteredImages.length === 0) filteredImages = action.payload.images
+      let sorted = [...lockedImages, ...filteredImages].sort((a, b) => Date.parse(a.import_datetime) - Date.parse(b.import_datetime))
+      let takenPlacements: number[] = []
 
+      sorted.map((i) => {
+        if (i.order_index !== undefined) takenPlacements.push(i.order_index)
+        return i
+      })
+
+      const getPlacement = () => {
+        for (let i = 1; i <= sorted.length + 1; i++) {
+          if (!takenPlacements.includes(i)) return i
+        }
+        return undefined
+      }
+
+      sorted.map((i, index) => {
+        if (i.order_index === undefined) {
+          const placement = getPlacement()
+          if (placement) {
+            i.order_index = placement
+            takenPlacements.push(placement)
+          }
+        }
+        return i
+      })
       return {
         ...state,
-        images: [...lockedImages,...filteredImages]
+        images: [...sorted]
       }
     case 'SN/APP/TOGGLE_IMAGE_LOCK':
       const processedImages = state.images.map(i => {
@@ -26,24 +51,30 @@ const galleryReducer = (state = initialState, action: ActionsType): InitialState
         ...state,
         images: [...processedImages]
       }
+    case 'SN/APP/SET_TRENDING_OFFSET':
+      return {
+        ...state,
+        offset: state.offset + action.payload.offset
+      }
     default:
       return state
   }
 }
 
 export const actions = {
-  loadImages: (images: ResponseDataType[]) => ({type: 'SN/APP/LOAD_IMAGES', payload: {images}} as const),
-  toggleImageLock: (image: ResponseDataType) => ({type: 'SN/APP/TOGGLE_IMAGE_LOCK', payload: {image}} as const)
+  loadImages: (images: GifType[]) => ({type: 'SN/APP/LOAD_IMAGES', payload: {images}} as const),
+  toggleImageLock: (image: GifType) => ({type: 'SN/APP/TOGGLE_IMAGE_LOCK', payload: {image}} as const),
+  increaseTrendingOffset: (offset: number) => ({type: 'SN/APP/SET_TRENDING_OFFSET', payload: {offset}} as const)
 }
 
-export const loadImages = (): ThunkType => async (dispatch) =>  {
+export const loadImages = (): ThunkType => async (dispatch) => {
   giphyAPI.searchGifs('funny').then(res => {
     dispatch(actions.loadImages(res.data.data))
   })
 }
 
-export const loadTrendingImages = (limit: number = 12): ThunkType => async (dispatch) =>  {
-  giphyAPI.getTrending(limit).then(res => {
+export const loadTrendingImages = (limit: number | null = 12, offset: number | null = 0): ThunkType => async (dispatch) => {
+  giphyAPI.getTrending(limit, offset).then(res => {
     dispatch(actions.loadImages(res.data.data))
   })
 }
